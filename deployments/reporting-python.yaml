@@ -1,0 +1,26 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: reporting-python
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: reporting-python 
+            image: friendlyrentals/reporting-python
+            env:
+            - name: RUN_SCRIPT
+              value: "ActiveCampaignPerformance.py"
+            volumeMounts:
+            - name: reporting-python
+              mountPath: /mnt/persistence
+          restartPolicy: OnFailure
+          volumes:
+          - name: reporting-python
+            azureFile:
+              secretName: azure-frcontainerpersistence-password
+              shareName: frcontainerpersistence
+              readOnly: false
